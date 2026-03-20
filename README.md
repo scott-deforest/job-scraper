@@ -40,7 +40,7 @@ A Python-based job scraper that pulls listings from Greenhouse APIs, filters for
 2. Run the script:
 
 ```bash
-python main.py
+python job_scraper.py
 ```
  3. View output:
 	- Matching jobs will print in the console
