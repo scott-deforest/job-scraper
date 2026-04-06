@@ -125,6 +125,9 @@ with open(seen_file, "w") as file:
     for job_id in seen_jobs:
         file.write(job_id + "\n")
 
+matching_jobs.sort(key=lambda job: (job[0].lower(), job[1].lower()))
+new_jobs.sort(key=lambda job: (job[0].lower(), job[1].lower()))
+
 with open("product_jobs.csv", "w", newline="", encoding="utf-8") as file:
     writer = csv.writer(file)
     writer.writerow(["Company", "Title", "Location", "Link"])
