@@ -28,6 +28,19 @@ exclude_keywords = [
     "operations",
 ]
 
+location_keywords = [
+    "remote",
+    "philadelphia",
+    "king of prussia",
+    "conshohocken",
+    "malvern",
+    "wayne",
+    "radnor",
+    "pennsylvania",
+    "newtown square",
+    "west chester",
+]
+
 matches = 0
 matching_jobs = []
 new_jobs = []
@@ -57,11 +70,13 @@ for company in companies:
         job_id = f"{company}_{job['id']}"
 
         title_lower = title.lower()
+        location_lower = location.lower()
 
         include_match = any(word in title_lower for word in include_keywords)
         exclude_match = any(word in title_lower for word in exclude_keywords)
+        location_match = any(word in location_lower for word in location_keywords)
 
-        if include_match and not exclude_match:
+        if include_match and not exclude_match and location_match:
             matches += 1
             matching_jobs.append([company, title, location, link])
 
