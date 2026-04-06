@@ -3,7 +3,20 @@ import urllib.request
 import urllib.error
 import csv
 
-companies = ["stripe", "coinbase", "airbnb"]
+companies = [
+    "stripe",
+    "coinbase",
+    "airbnb",
+    "hubspot",
+    "datadog",
+    "webflow",
+    "mongodb",
+    "okta",
+    "affirm",
+    "reddit",
+    "discord",
+    "instacart",
+]
 
 seen_file = "seen_jobs.txt"
 
@@ -28,17 +41,29 @@ exclude_keywords = [
     "operations",
 ]
 
-location_keywords = [
-    "remote",
+remote_keywords = [
+    "us-remote",
+    "us remote",
+    "remote-us",
+    "remote us",
+    "united states remote",
+    "remote - us",
+    "usa remote",
+    "remote (us)",
+    "remote, us",
+]
+
+local_keywords = [
     "philadelphia",
     "king of prussia",
     "conshohocken",
     "malvern",
     "wayne",
     "radnor",
-    "pennsylvania",
     "newtown square",
     "west chester",
+    "plymouth meeting",
+    "pennsylvania",
 ]
 
 matches = 0
@@ -61,7 +86,7 @@ for company in companies:
         continue
 
     jobs = data["jobs"]
-    print(f"{company}: {len(jobs)} total jobs")
+    print(f"{company}: {len(jobs)} total jobs fetched")
 
     for job in jobs:
         title = job["title"]
@@ -74,7 +99,10 @@ for company in companies:
 
         include_match = any(word in title_lower for word in include_keywords)
         exclude_match = any(word in title_lower for word in exclude_keywords)
-        location_match = any(word in location_lower for word in location_keywords)
+
+        remote_match = any(word in location_lower for word in remote_keywords)
+        local_match = any(word in location_lower for word in local_keywords)
+        location_match = remote_match or local_match
 
         if include_match and not exclude_match and location_match:
             matches += 1
