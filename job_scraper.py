@@ -3,7 +3,7 @@ import urllib.request
 import urllib.error
 import csv
 
-companies = [
+greenhouse_companies = [
     "stripe",
     "coinbase",
     "airbnb",
@@ -17,6 +17,8 @@ companies = [
     "discord",
     "instacart",
 ]
+
+lever_companies = []
 
 seen_file = "seen_jobs.txt"
 
@@ -46,11 +48,10 @@ remote_keywords = [
     "us remote",
     "remote-us",
     "remote us",
-    "united states remote",
-    "remote - us",
-    "usa remote",
     "remote (us)",
     "remote, us",
+    "united states remote",
+    "usa remote",
 ]
 
 local_keywords = [
@@ -62,7 +63,6 @@ local_keywords = [
     "radnor",
     "newtown square",
     "west chester",
-    "plymouth meeting",
     "pennsylvania",
 ]
 
@@ -70,29 +70,75 @@ matches = 0
 matching_jobs = []
 new_jobs = []
 
-for company in companies:
+for company in greenhouse_companies:
     url = f"https://boards-api.greenhouse.io/v1/boards/{company}/jobs"
 
     try:
         with urllib.request.urlopen(url) as response:
             data = json.load(response)
     except urllib.error.HTTPError as e:
-        print(f"{company}: HTTP Error {e.code}")
+        print(f"Greenhouse - {company}: HTTP Error {e.code}")
         print("-" * 40)
         continue
     except urllib.error.URLError as e:
-        print(f"{company}: URL Error - {e.reason}")
+        print(f"Greenhouse - {company}: URL Error - {e.reason}")
         print("-" * 40)
         continue
 
     jobs = data["jobs"]
-    print(f"{company}: {len(jobs)} total jobs fetched")
+    print(f"Greenhouse - {company}: {len(jobs)} total jobs fetched")
 
     for job in jobs:
         title = job["title"]
         location = job["location"]["name"]
         link = job["absolute_url"]
-        job_id = f"{company}_{job['id']}"
+        job_id = f"greenhouse_{company}_{job['id']}"
+
+        title_lower = title.lower()
+        location_lower = location.lower()
+
+        include_match = any(word in title_lower for word in include_keywords)
+        exclude_match = any(word in title_lower for word in exclude_keywords)
+
+        remote_match = any(word in location_lower for word in remote_keywords)
+        local_match = any(word in location_lower for word in local_keywords)
+        location_match = remote_match or local_match
+
+        if include_match and not exclude_match and location_match:
+            matches += 1
+            matching_jobs.append([company, title, location, link])
+
+            if job_id not in seen_jobs:
+                new_jobs.append([company, title, location, link])
+                seen_jobs.add(job_id)
+
+                print("NEW JOB:", title)
+                print("Location:", location)
+                print("Link:", link)
+                print("-" * 40)
+
+for company in lever_companies:
+    url = f"https://api.lever.co/v0/postings/{company}?mode=json"
+
+    try:
+        with urllib.request.urlopen(url) as response:
+            jobs = json.load(response)
+    except urllib.error.HTTPError as e:
+        print(f"Lever - {company}: HTTP Error {e.code}")
+        print("-" * 40)
+        continue
+    except urllib.error.URLError as e:
+        print(f"Lever - {company}: URL Error - {e.reason}")
+        print("-" * 40)
+        continue
+
+    print(f"Lever - {company}: {len(jobs)} total jobs fetched")
+
+    for job in jobs:
+        title = job["text"]
+        location = job["categories"]["location"]
+        link = job["hostedUrl"]
+        job_id = f"lever_{company}_{job['id']}"
 
         title_lower = title.lower()
         location_lower = location.lower()
