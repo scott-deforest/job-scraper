@@ -42,7 +42,7 @@ Run the main script:
 
 ```bash
 python job_scraper.py
-
+```
 After running:
 - New jobs will be printed to the console
 - CSV files will be created/updated in the project directory
