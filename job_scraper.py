@@ -22,12 +22,6 @@ lever_companies = []
 
 seen_file = "seen_jobs.txt"
 
-try:
-    with open(seen_file, "r") as file:
-        seen_jobs = set(file.read().splitlines())
-except FileNotFoundError:
-    seen_jobs = set()
-
 include_keywords = ["product manager", "product lead", "product management"]
 exclude_keywords = [
     "sales",
@@ -66,6 +60,44 @@ local_keywords = [
     "pennsylvania",
 ]
 
+
+def load_seen_jobs(filename):
+    try:
+        with open(filename, "r") as file:
+            return set(file.read().splitlines())
+    except FileNotFoundError:
+        return set()
+
+
+def save_seen_jobs(filename, seen_jobs):
+    with open(filename, "w") as file:
+        for job_id in seen_jobs:
+            file.write(job_id + "\n")
+
+
+def job_matches_filters(title, location):
+    title_lower = title.lower()
+    location_lower = location.lower()
+
+    include_match = any(word in title_lower for word in include_keywords)
+    exclude_match = any(word in title_lower for word in exclude_keywords)
+
+    remote_match = any(word in location_lower for word in remote_keywords)
+    local_match = any(word in location_lower for word in local_keywords)
+    location_match = remote_match or local_match
+
+    return include_match and not exclude_match and location_match
+
+
+def write_csv(filename, rows):
+    with open(filename, "w", newline="", encoding="utf-8") as file:
+        writer = csv.writer(file)
+        writer.writerow(["Company", "Title", "Location", "Link"])
+        writer.writerows(rows)
+
+
+seen_jobs = load_seen_jobs(seen_file)
+
 matches = 0
 matching_jobs = []
 new_jobs = []
@@ -94,17 +126,7 @@ for company in greenhouse_companies:
         link = job["absolute_url"]
         job_id = f"greenhouse_{company}_{job['id']}"
 
-        title_lower = title.lower()
-        location_lower = location.lower()
-
-        include_match = any(word in title_lower for word in include_keywords)
-        exclude_match = any(word in title_lower for word in exclude_keywords)
-
-        remote_match = any(word in location_lower for word in remote_keywords)
-        local_match = any(word in location_lower for word in local_keywords)
-        location_match = remote_match or local_match
-
-        if include_match and not exclude_match and location_match:
+        if job_matches_filters(title, location):
             matches += 1
             matching_jobs.append([company, title, location, link])
 
@@ -140,17 +162,7 @@ for company in lever_companies:
         link = job["hostedUrl"]
         job_id = f"lever_{company}_{job['id']}"
 
-        title_lower = title.lower()
-        location_lower = location.lower()
-
-        include_match = any(word in title_lower for word in include_keywords)
-        exclude_match = any(word in title_lower for word in exclude_keywords)
-
-        remote_match = any(word in location_lower for word in remote_keywords)
-        local_match = any(word in location_lower for word in local_keywords)
-        location_match = remote_match or local_match
-
-        if include_match and not exclude_match and location_match:
+        if job_matches_filters(title, location):
             matches += 1
             matching_jobs.append([company, title, location, link])
 
@@ -167,22 +179,13 @@ print()
 print("Matching jobs found:", matches)
 print("New jobs found:", len(new_jobs))
 
-with open(seen_file, "w") as file:
-    for job_id in seen_jobs:
-        file.write(job_id + "\n")
+save_seen_jobs(seen_file, seen_jobs)
 
 matching_jobs.sort(key=lambda job: (job[0].lower(), job[1].lower()))
 new_jobs.sort(key=lambda job: (job[0].lower(), job[1].lower()))
 
-with open("product_jobs.csv", "w", newline="", encoding="utf-8") as file:
-    writer = csv.writer(file)
-    writer.writerow(["Company", "Title", "Location", "Link"])
-    writer.writerows(matching_jobs)
-
-with open("new_jobs.csv", "w", newline="", encoding="utf-8") as file:
-    writer = csv.writer(file)
-    writer.writerow(["Company", "Title", "Location", "Link"])
-    writer.writerows(new_jobs)
+write_csv("product_jobs.csv", matching_jobs)
+write_csv("new_jobs.csv", new_jobs)
 
 print("CSV file created: product_jobs.csv")
 print("CSV file created: new_jobs.csv")
