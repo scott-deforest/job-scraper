@@ -3,62 +3,16 @@ import urllib.request
 import urllib.error
 import csv
 
-greenhouse_companies = [
-    "stripe",
-    "coinbase",
-    "airbnb",
-    "hubspot",
-    "datadog",
-    "webflow",
-    "mongodb",
-    "okta",
-    "affirm",
-    "reddit",
-    "discord",
-    "instacart",
-]
-
-lever_companies = []
+from config import (
+    greenhouse_companies,
+    lever_companies,
+    include_keywords,
+    exclude_keywords,
+    remote_keywords,
+    local_keywords,
+)
 
 seen_file = "seen_jobs.txt"
-
-include_keywords = ["product manager", "product lead", "product management"]
-exclude_keywords = [
-    "sales",
-    "account executive",
-    "marketing",
-    "recruiter",
-    "partner",
-    "designer",
-    "design",
-    "counsel",
-    "accounting",
-    "support",
-    "operations",
-]
-
-remote_keywords = [
-    "us-remote",
-    "us remote",
-    "remote-us",
-    "remote us",
-    "remote (us)",
-    "remote, us",
-    "united states remote",
-    "usa remote",
-]
-
-local_keywords = [
-    "philadelphia",
-    "king of prussia",
-    "conshohocken",
-    "malvern",
-    "wayne",
-    "radnor",
-    "newtown square",
-    "west chester",
-    "pennsylvania",
-]
 
 
 def load_seen_jobs(filename):
