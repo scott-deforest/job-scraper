@@ -11,7 +11,25 @@ greenhouse_companies = [
     "reddit",
     "discord",
     "instacart",
+    "elastic",
+    "databricks",
+    "brex",
+    "mercury",
+    "samsara",
+    "toast",
+    "scaleai",
 ]
+
+# Known invalid or non-Greenhouse companies (kept for reference)
+# "snowflake",
+# "plaid",
+# "ramp",
+# "servicetitan",
+# "procore",
+# "wandb",
+# hashicorp,
+# "confluent",
+
 
 lever_companies = []
 
@@ -57,6 +75,7 @@ local_keywords = [
     "newtown square",
     "west chester",
     "pennsylvania",
-    "plymouth meeting"
-    "bala cynwyd"
+    "plymouth meeting",
+    "bala cynwyd",
+    "berwyn",
 ]
