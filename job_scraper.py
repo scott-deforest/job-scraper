@@ -1,7 +1,9 @@
+from email.quoprimime import quote
 import json
 import urllib.request
 import urllib.error
 import csv
+from urllib.parse import quote
 
 from config import (
     greenhouse_companies,
@@ -57,7 +59,7 @@ matching_jobs = []
 new_jobs = []
 
 for company in greenhouse_companies:
-    url = f"https://boards-api.greenhouse.io/v1/boards/{company}/jobs"
+    url = f"https://boards-api.greenhouse.io/v1/boards/{quote(company.strip())}/jobs"
 
     try:
         with urllib.request.urlopen(url) as response:
