@@ -4,6 +4,9 @@ import urllib.request
 import urllib.error
 import csv
 from urllib.parse import quote
+import os
+
+os.makedirs("data", exist_ok=True)
 
 from config import (
     greenhouse_companies,
@@ -14,7 +17,7 @@ from config import (
     local_keywords,
 )
 
-seen_file = "seen_jobs.txt"
+seen_file = "data/seen_jobs.txt"
 
 
 def load_seen_jobs(filename):
@@ -140,8 +143,11 @@ save_seen_jobs(seen_file, seen_jobs)
 matching_jobs.sort(key=lambda job: (job[0].lower(), job[1].lower()))
 new_jobs.sort(key=lambda job: (job[0].lower(), job[1].lower()))
 
-write_csv("product_jobs.csv", matching_jobs)
-write_csv("new_jobs.csv", new_jobs)
+product_file = "data/product_jobs.csv"
+new_file = "data/new_jobs.csv"
 
-print("CSV file created: product_jobs.csv")
-print("CSV file created: new_jobs.csv")
+write_csv(product_file, matching_jobs)
+write_csv(new_file, new_jobs)
+
+print(f"CSV file created: {product_file}")
+print(f"CSV file created: {new_file}")

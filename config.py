@@ -18,6 +18,7 @@ greenhouse_companies = [
     "samsara",
     "toast",
     "scaleai",
+    "coreweave",
 ]
 
 # Known invalid or non-Greenhouse companies (kept for reference)
