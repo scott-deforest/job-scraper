@@ -209,3 +209,10 @@ __marimo__/
 # Ignore gernerated output files
 *.csv
 seen_jobs.txt
+
+# macOS
+.DS_Store
+
+# Project-specific
+data/
+logs/
