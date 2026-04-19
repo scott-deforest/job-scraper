@@ -80,3 +80,7 @@ local_keywords = [
     "bala cynwyd",
     "berwyn",
 ]
+
+email_enabled = True
+email_recipient = "scott.deforest@gmail.com"
+email_subject = "New Product Jobs Found"

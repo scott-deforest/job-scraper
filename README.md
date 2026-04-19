@@ -23,6 +23,14 @@ The script pulls live job data, filters it based on role relevance and location,
 - `new_jobs.csv` — only newly detected jobs since last run
 - Sorts output by company and title for easier review
 - Includes scaffolded support for Lever job boards (future expansion)
+- Automated daily execution using launchd
+- Email notifications for newly detected jobs
+
+## Automation
+This scraper is configured to run automatically each day using macOS `launchd`.
+- Runs daily at 8:00 AM
+- Updates job listings and detects new postings
+- Sends an email notification when new roles are found
 
 ## How It Works
 1. Fetch job listings from company job boards via API
@@ -58,11 +66,12 @@ This project also serves as a hands-on way to build practical Python skills, inc
 - state tracking
 
 ## Future Improvements
-- Expand support beyond Greenhouse (Lever, etc.)
+- Expand support to additional job board platforms
 - Improve location parsing and normalization
 - Add job posting timestamps
-- Add email or scheduled alerts
-- Externalize configuration (company lists, filters)
+- Attach CSV results to email alerts
+- Automatically track invalid company tokens
+- Support more flexible configuration as the project grows
 
 ---
 

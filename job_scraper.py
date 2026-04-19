@@ -5,6 +5,8 @@ import urllib.error
 import csv
 from urllib.parse import quote
 import os
+import smtplib
+from email.mime.text import MIMEText
 
 os.makedirs("data", exist_ok=True)
 
@@ -15,6 +17,9 @@ from config import (
     exclude_keywords,
     remote_keywords,
     local_keywords,
+    email_enabled,
+    email_recipient,
+    email_subject,
 )
 
 seen_file = "data/seen_jobs.txt"
@@ -53,6 +58,38 @@ def write_csv(filename, rows):
         writer = csv.writer(file)
         writer.writerow(["Company", "Title", "Location", "Link"])
         writer.writerows(rows)
+
+def send_email(rows):
+    if not email_enabled or not rows:
+        return
+
+    email_user = os.getenv("EMAIL_USER")
+    email_pass = os.getenv("EMAIL_PASS")
+
+    if not email_user or not email_pass:
+        print("Email skipped: EMAIL_USER or EMAIL_PASS not set.")
+        return
+
+    body_lines = ["New product jobs found:", ""]
+
+    for company, title, location, link in rows:
+        body_lines.append(f"{company} - {title}")
+        body_lines.append(location)
+        body_lines.append(link)
+        body_lines.append("")
+
+    body = "\n".join(body_lines)
+
+    msg = MIMEText(body)
+    msg["Subject"] = email_subject
+    msg["From"] = email_user
+    msg["To"] = email_recipient
+
+    with smtplib.SMTP_SSL("smtp.gmail.com", 465) as server:
+        server.login(email_user, email_pass)
+        server.send_message(msg)
+
+    print(f"Email sent to: {email_recipient}")
 
 
 seen_jobs = load_seen_jobs(seen_file)
@@ -151,3 +188,5 @@ write_csv(new_file, new_jobs)
 
 print(f"CSV file created: {product_file}")
 print(f"CSV file created: {new_file}")
+
+send_email(new_jobs)
